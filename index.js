@@ -99,18 +99,44 @@ $(function () {
         spacemap = $('#vis').spaceMap({
             data: data,
             constraints: constraints,
+            size: nihDemo ? function (d) {
+                var val = d['AZ SGRQ_scoreTotal'];
+                // 65, diagnosed at 60
+                if (d['*A sid'] === '10455V') {
+                    return 15;
+                }
+                return 6;
+            } : function (d) { return 6; },
             color: nihDemo ? function (d) {
                 var val = d['AZ SGRQ_scoreTotal'];
                 // 65, diagnosed at 60
-                if (d['*A sid'] === '10129I') {
-                    return 'blue';
+                if (d['*A sid'] === '10455V') {
+                    return 'black';
                 } else if (val > 40) {
                     return 'red';
                 } else if (val > 20) {
                     return 'yellow';
                 }
                 return 'green';
-            } : function (d) { return '#999'; }
+            } : function (d) { return '#999'; },
+            click: function (d) {
+                console.log(d);
+                $('#details').removeClass('hidden');
+                d3.select('#image-x').attr('src', 'images/' + d['*A sid'] + '_INSP_STD_' + d['*B ccenter'] + '_COPD_projectionAlongX.png');
+                d3.select('#image-y').attr('src', 'images/' + d['*A sid'] + '_INSP_STD_' + d['*B ccenter'] + '_COPD_projectionAlongY.png');
+                d3.select('#image-z').attr('src', 'images/' + d['*A sid'] + '_INSP_STD_' + d['*B ccenter'] + '_COPD_projectionAlongZ.png');
+                d3.select('#detail-id').text(d['*A sid']);
+                d3.select('#detail-age').text(d['*E Age_Enroll']);
+                d3.select('#detail-copdage').text(d['AT CopdAge']);
+                d3.select('#detail-gender').text(d['*C gender'] === 1 ? 'Male' : 'Female');
+                d3.select('#detail-bmi').text(d['*L BMI']);
+                d3.select('#detail-packyears').text(d['*O ATS_PackYears']);
+                d3.select('#detail-distwalked').text(d['*M distwalked']);
+                d3.select('#detail-fev1').text(d['*U FEV1_FVC_utah']);
+                d3.select('#detail-bode').text(d['*N BODE']);
+                d3.select('#detail-gold').text(d['*R finalGold']);
+                d3.select('#detail-sgrq').text(d['AZ SGRQ_scoreTotal']);
+            }
         }).data('spaceMap');
 
         d3.select('#field-select').selectAll('option')
@@ -162,31 +188,31 @@ $(function () {
 
     if (nihDemo) {
         $('#bmi-slider').slider({
-            min: 10,
-            max: 40,
+            min: 15,
+            max: 45,
             value: 30,
-            step: 0.001,
+            step: 1,
             change: function (evt, ui) {
-                data[46]['*L BMI'] = ui.value;
+                data[148]['*L BMI'] = ui.value;
                 updateData(data.slice(0, +$('#limit').val()));
             },
             slide: function (evt, ui) {
-                data[46]['*Q YearsSinceQuit'] = ui.value;
+                data[148]['*L BMI'] = ui.value;
                 updateData(data.slice(0, +$('#limit').val()));
             }
         });
 
-        $('#quit-slider').slider({
-            min: 0,
-            max: 30,
-            value: 0,
-            step: 0.001,
+        $('#distwalked-slider').slider({
+            min: 1000,
+            max: 3000,
+            value: 2000,
+            step: 10,
             change: function (evt, ui) {
-                data[46]['*Q YearsSinceQuit'] = ui.value;
+                data[148]['*M distwalked'] = ui.value;
                 updateData(data.slice(0, +$('#limit').val()));
             },
             slide: function (evt, ui) {
-                data[46]['*Q YearsSinceQuit'] = ui.value;
+                data[148]['*M distwalked'] = ui.value;
                 updateData(data.slice(0, +$('#limit').val()));
             }
         });

@@ -33,11 +33,52 @@
         margin-top: 10px;
     }
 
+    #details {
+        position: fixed;
+        right: 20px;
+        top: 20px;
+        background-color: rgba(200, 200, 200, 0.5);
+        width: 800px;
+        padding: 20px;
+    }
+
+    .thumb {
+        height: 200px;
+    }
+
+    .detail-attribute {
+        text-align: right;
+        width: 50%;
+    }
+
+    table {
+        font-weight: bold;
+    }
+
 </style>
 
 <title>Spacemap</title>
 
 <div id="vis"></div>
+
+<div id="details" class="hidden">
+    <img id="image-x" class="thumb" src="/images/11251K_INSP_STD_HAR_COPD_projectionAlongX.png">
+    <img id="image-y" class="thumb" src="/images/11251K_INSP_STD_HAR_COPD_projectionAlongY.png">
+    <img id="image-z" class="thumb" src="/images/11251K_INSP_STD_HAR_COPD_projectionAlongZ.png">
+    <table class="table">
+        <tr><td class="detail-attribute">ID</td><td id="detail-id"></td></tr>
+        <tr><td class="detail-attribute">Age</td><td id="detail-age"></td></tr>
+        <tr><td class="detail-attribute">COPD diagnosis age</td><td id="detail-copdage"></td></tr>
+        <tr><td class="detail-attribute">Gender</td><td id="detail-gender"></td></tr>
+        <tr><td class="detail-attribute">BMI</td><td id="detail-bmi"></td></tr>
+        <tr><td class="detail-attribute">ATS pack years</td><td id="detail-packyears"></td></tr>
+        <tr><td class="detail-attribute">Distance walked</td><td id="detail-distwalked"></td></tr>
+        <tr><td class="detail-attribute">FEV1 / FVC</td><td id="detail-fev1"></td></tr>
+        <tr><td class="detail-attribute">BODE</td><td id="detail-bode"></td></tr>
+        <tr><td class="detail-attribute">Final Gold</td><td id="detail-gold"></td></tr>
+        <tr><td class="detail-attribute">SGRQ quality of life</td><td id="detail-sgrq"></td></tr>
+    </table>
+</div>
 
 <!-- Create a drawer with the control panel in it -->
 <div id="control-panel">
@@ -50,9 +91,9 @@
                     <div class="col-sm-2">
                         <div id="bmi-slider"></div>
                     </div>
-                    <label class="col-sm-2 control-label">Years Since Quit</label>
+                    <label class="col-sm-2 control-label">Distance walked</label>
                     <div class="col-sm-2">
-                        <div id="quit-slider"></div>
+                        <div id="distwalked-slider"></div>
                     </div>
                 </div>
             </div>

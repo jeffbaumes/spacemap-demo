@@ -22,10 +22,12 @@
             width: $(window).width(),
             height: $(window).height(),
             color: tangelo.accessor({value: '#999'}),
+            size: tangelo.accessor({value: 5}),
             showPoints: true,
             showConstraints: false,
             showLinks: true,
-            layout: true
+            layout: true,
+            click: null
         },
 
         _create: function () {
@@ -36,37 +38,6 @@
 
             this.force = d3.layout.force();
 
-            // mapConfig = {
-            //     initialize: function (svg) {
-            //         that.svg = d3.select(svg);
-            //         that._update();
-            //     },
-            //
-            //     draw: function (d) {
-            //         this.shift(that.svg.node(), -d.translation.x, -d.translation.y);
-            //         that.nodes.forEach(function(node) {
-            //             var loc, googleLoc, pixelLoc;
-            //             if (node.constraint && node.constraint.type === 'map') {
-            //                 loc = node.constraint.accessor(node.data);
-            //                 googleLoc = new google.maps.LatLng(loc.lat, loc.lng);
-            //                 pixelLoc = d.projection.fromLatLngToContainerPixel(googleLoc);
-            //                 node.mapX = pixelLoc.x;
-            //                 node.mapY = pixelLoc.y;
-            //             }
-            //         });
-            //         that.force.start();
-            //         that._tick();
-            //     }
-            // };
-            //
-            // // Some options for initializing the google map.
-            // mapOptions = {
-            //     zoom: 2,
-            //     center: new google.maps.LatLng(15, 0),
-            //     mapTypeId: google.maps.MapTypeId.ROADMAP
-            // };
-            // this.map = new tangelo.GoogleMapSVG(this.element.get(0), mapOptions, mapConfig);
-            // this.map.on(['draw', 'drag', 'zoom_changed'], mapConfig.draw);
             this.svg = d3.select(this.element.get(0)).append('svg')
                 .attr('width', '100%')
                 .attr('height', '100%');
@@ -355,9 +326,6 @@
                     };
                 } else if (constraint.type === 'link') {
                     constraint.constrain = function () {};
-                    // constraint.sizeScale = d3.scale.ordinal()
-                    //     .domain(that.options.data.map(constraint.accessor))
-                    //     .rangePoints([2, 20], 1);
                     constraint.sizeScale = d3.scale.sqrt()
                         .domain(d3.extent(that.options.data, constraint.accessor))
                         .range([2, 20]);
@@ -504,7 +472,6 @@
                 })
                 .charge(this.options.charge)
                 .gravity(this.options.gravity)
-                //.chargeDistance(20)
                 .theta(0.1)
                 .size([this.options.width, this.options.height])
                 .nodes(this.nodes)
@@ -523,7 +490,6 @@
                 .append('line')
                 .classed('link', true)
                 .style('opacity', function (d) { return d.constraint.strength / 2; })
-                //.style('stroke', '#999')
                 .style('stroke', function (d) { return colorScale(d.constraint ? d.constraint.index : -1); })
                 .style('stroke-width', that.options.showLinks ? 1 : 0);
 
@@ -538,8 +504,6 @@
                 .style('stroke', '#999')
                 .style('stroke-width', 1);
             nodeEnter.append('text')
-                // .style('stroke', function (d) { return colorScale(d.constraint ? d.constraint.index : -1); })
-                // .style('stroke-width', 1.5)
                 .style('fill', 'black')
                 .text(function (d) {
                     if (d.constraint) {
@@ -560,19 +524,19 @@
                 });
 
             this.node
-                .style('opacity', function (d) { return d.constraint ? d.constraint.strength : 1; });
-                //.style('opacity', function (d) { return d.constraintNode ? 0 : 1; });
+                .style('opacity', function (d) { return d.constraint ? d.constraint.strength : 1; })
+                .on('click', function (d) {
+                    if (!d.constraint) {
+                        that.options.click(d.data);
+                    }
+                });
 
             this.node.selectAll('circle')
-                .attr('r', function (d) { return d.constraintNode ? (that.options.showConstraints ? d.constraint.sizeScale(d.value) : 0) : (that.options.showPoints ? 6 : 0); })
-                //.style('fill', function (d) { return colorScale(d.constraint ? d.constraint.index : -1); })
+                .attr('r', function (d) { return d.constraintNode ? (that.options.showConstraints ? d.constraint.sizeScale(d.value) : 0) : (that.options.showPoints ? that.options.size(d.data) : 0); })
                 .style('fill', function (d) { return d.constraint ? colorScale(d.constraint.index) : that.options.color(d.data); });
-                // .style('stroke', function (d) { d3.rgb(d.constraint ? colorScale(d.constraint.index) : that.options.color(d.data)).darker(3).toString(); });
 
             this.force.on('tick', function () { that._tick.call(that); });
             this.force.resume();
-
-            // this.map.trigger('draw');
         },
 
         _tick: function () {
